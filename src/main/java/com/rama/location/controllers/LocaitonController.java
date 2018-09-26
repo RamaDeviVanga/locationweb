@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.rama.location.entities.Location;
+import com.rama.location.repos.LocationRepository;
 import com.rama.location.service.LocationService;
+import com.rama.location.util.EmailUtil;
 
 @Controller
 public class LocaitonController {
@@ -18,17 +20,26 @@ public class LocaitonController {
 	@Autowired
 	LocationService service;
 	
+	@Autowired
+	LocationRepository repository;
+	
+	
+	@Autowired
+	EmailUtil emailUtil;
+	
 	@RequestMapping("/showCreate")
 	public String showCreate() {
 		return "createLocation";
-		
+
 	}
 	@RequestMapping("/saveLoc")
-	public String saveLocation(@ModelAttribute("location")Location location,ModelMap modelMap) {
-	Location locationSaved=service.saveLocation(location);
-	String msg = "Location saved with id:"+ locationSaved.getId();
-	modelMap.addAttribute("msg", msg);
-	return "createLocation";
+	public String saveLocation(@ModelAttribute("location") Location location, ModelMap modelMap) {
+		Location locationSaved = service.saveLocation(location);
+		String msg = "Location saved with id:" + locationSaved.getId();
+		modelMap.addAttribute("msg", msg);
+		emailUtil.sendEmail("ramavangaprojects@gmail.com", "Location Saved",
+				"Location Saved Successfully and about to return a response");
+		return "createLocation";
 	}
 	
 	@RequestMapping("/displayLocations")
